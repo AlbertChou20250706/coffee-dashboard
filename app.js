@@ -449,7 +449,7 @@ function exportToExcel() {
     document.body.removeChild(link);
 }
 
-async function exportToZip() {
+function exportToZip() {
     // Since we can't use external libraries, we'll create a simple multi-file download
     // In a real application, you would use a library like JSZip
     
