@@ -557,8 +557,8 @@
 
     <div class="notification" id="notification"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr+equG0SPwSWD1WRv4W3Gx4xm/dqxnC5wGOZ9T+2P6zMPcqXdqjNJ4GXc+eKbUfQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         // Translation object
         const translations = {
@@ -739,7 +739,8 @@
                 second: '2-digit',
                 hour12: false
             };
-            document.getElementById('dateTime').textContent = now.toLocaleString('zh-TW', options);
+            const localeMap = { zh: 'zh-TW', en: 'en-US', jp: 'ja-JP' };
+            document.getElementById('dateTime').textContent = now.toLocaleString(localeMap[currentLanguage] || 'zh-TW', options);
         }
 
         function changeLanguage() {
@@ -959,6 +960,7 @@
                 csv += row.join(',') + '\n';
             });
             
+            // Add BOM (Byte Order Mark) to ensure proper UTF-8 encoding in Excel
             const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -967,8 +969,7 @@
             showNotification(translations[currentLanguage].exportSuccess);
         }
 
-        function exportToHTML() {
-            const data = getCurrentData();
+        function generateHTMLExport(data) {
             let html = `<!DOCTYPE html>
 <html>
 <head>
@@ -996,6 +997,12 @@
             });
             
             html += `</table></body></html>`;
+            return html;
+        }
+
+        function exportToHTML() {
+            const data = getCurrentData();
+            const html = generateHTMLExport(data);
             
             const blob = new Blob([html], { type: 'text/html' });
             const link = document.createElement('a');
@@ -1021,36 +1028,11 @@
             data.forEach(row => {
                 csv += row.join(',') + '\n';
             });
+            // Add BOM (Byte Order Mark) to ensure proper UTF-8 encoding in Excel
             zip.file("coffee-dashboard-data.csv", '\ufeff' + csv);
 
             // Add HTML
-            let html = `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Coffee Dashboard Export</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #4a90e2; color: white; }
-        h1 { color: #333; }
-    </style>
-</head>
-<body>
-    <h1>☕ Coffee Dashboard Export</h1>
-    <p>Export Date: ${new Date().toLocaleString()}</p>
-    <table>`;
-            
-            data.forEach((row, index) => {
-                html += '<tr>';
-                row.forEach(cell => {
-                    html += index === 0 ? `<th>${cell}</th>` : `<td>${cell}</td>`;
-                });
-                html += '</tr>';
-            });
-            
-            html += `</table></body></html>`;
+            const html = generateHTMLExport(data);
             zip.file("coffee-dashboard-data.html", html);
 
             // Generate ZIP
