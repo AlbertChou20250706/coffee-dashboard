@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Dashboard | 咖啡數據儀表板</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="logo">☕ Coffee Dashboard</h1>
+                <p class="subtitle" data-i18n="subtitle">專業咖啡數據管理平台</p>
+            </div>
+            <div class="header-right">
+                <!-- Theme Switcher -->
+                <button class="theme-toggle" id="themeToggle" title="切換主題">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <!-- Language Switcher -->
+                <select class="language-select" id="languageSelect">
+                    <option value="zh">中文</option>
+                    <option value="en">English</option>
+                    <option value="ja">日本語</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="control-group">
+                <button class="btn btn-primary" id="addRow">
+                    <span>➕</span>
+                    <span data-i18n="addRow">新增數據</span>
+                </button>
+                <button class="btn btn-secondary" id="deleteSelected">
+                    <span>🗑️</span>
+                    <span data-i18n="deleteSelected">刪除選中</span>
+                </button>
+            </div>
+            <div class="control-group">
+                <button class="btn btn-success" id="exportExcel">
+                    <span>📊</span>
+                    <span data-i18n="exportExcel">匯出 Excel</span>
+                </button>
+                <button class="btn btn-success" id="exportCSV">
+                    <span>📄</span>
+                    <span data-i18n="exportCSV">匯出 CSV</span>
+                </button>
+                <button class="btn btn-success" id="exportZip">
+                    <span>📦</span>
+                    <span data-i18n="exportZip">打包下載</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="table-container">
+            <table class="data-table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
+                        <th data-i18n="colId">編號</th>
+                        <th data-i18n="colName">咖啡名稱</th>
+                        <th data-i18n="colOrigin">產地</th>
+                        <th data-i18n="colRoast">烘焙度</th>
+                        <th data-i18n="colPrice">價格 (NT$)</th>
+                        <th data-i18n="colStock">庫存</th>
+                        <th data-i18n="colRating">評分</th>
+                        <th data-i18n="colActions">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-content">
+                    <div class="stat-label" data-i18n="totalItems">總項目數</div>
+                    <div class="stat-value" id="totalItems">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <div class="stat-label" data-i18n="avgPrice">平均價格</div>
+                    <div class="stat-value" id="avgPrice">$0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-content">
+                    <div class="stat-label" data-i18n="totalStock">總庫存</div>
+                    <div class="stat-value" id="totalStock">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-content">
+                    <div class="stat-label" data-i18n="avgRating">平均評分</div>
+                    <div class="stat-value" id="avgRating">0.0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2025 Albert.Chou Design. All rights reserved. | v3.0.0</p>
+        </footer>
+    </div>
+
+    <!-- Modal for Adding/Editing Data -->
+    <div class="modal" id="dataModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="modalTitle">新增咖啡數據</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="dataForm">
+                    <div class="form-group">
+                        <label data-i18n="colName">咖啡名稱</label>
+                        <input type="text" id="coffeeName" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="colOrigin">產地</label>
+                        <input type="text" id="coffeeOrigin" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="colRoast">烘焙度</label>
+                        <select id="coffeeRoast" required>
+                            <option value="淺焙">淺焙</option>
+                            <option value="中焙">中焙</option>
+                            <option value="中深焙">中深焙</option>
+                            <option value="深焙">深焙</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="colPrice">價格 (NT$)</label>
+                        <input type="number" id="coffeePrice" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="colStock">庫存</label>
+                        <input type="number" id="coffeeStock" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="colRating">評分</label>
+                        <input type="number" id="coffeeRating" min="0" max="5" step="0.1" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary" data-i18n="btnSave">保存</button>
+                        <button type="button" class="btn btn-secondary" id="modalCancel" data-i18n="btnCancel">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
