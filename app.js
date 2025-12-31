@@ -30,7 +30,11 @@ const translations = {
         confirmDelete: '確定要刪除此項目嗎？',
         confirmDeleteMultiple: '確定要刪除 {count} 個項目嗎？',
         selectItemsFirst: '請先選擇要刪除的項目',
-        downloadingFiles: '正在下載 CSV 和 JSON 檔案...'
+        downloadingFiles: '正在下載 CSV 和 JSON 檔案...',
+        roastLight: '淺焙',
+        roastMedium: '中焙',
+        roastMediumDark: '中深焙',
+        roastDark: '深焙'
     },
     en: {
         subtitle: 'Professional Coffee Data Management Platform',
@@ -60,7 +64,11 @@ const translations = {
         confirmDelete: 'Are you sure you want to delete this item?',
         confirmDeleteMultiple: 'Are you sure you want to delete {count} items?',
         selectItemsFirst: 'Please select items to delete first',
-        downloadingFiles: 'Downloading CSV and JSON files...'
+        downloadingFiles: 'Downloading CSV and JSON files...',
+        roastLight: 'Light Roast',
+        roastMedium: 'Medium Roast',
+        roastMediumDark: 'Medium-Dark Roast',
+        roastDark: 'Dark Roast'
     },
     ja: {
         subtitle: 'プロフェッショナルコーヒーデータ管理プラットフォーム',
@@ -90,7 +98,11 @@ const translations = {
         confirmDelete: 'この項目を削除してもよろしいですか？',
         confirmDeleteMultiple: '{count} 個の項目を削除してもよろしいですか？',
         selectItemsFirst: '削除する項目を先に選択してください',
-        downloadingFiles: 'CSVとJSONファイルをダウンロードしています...'
+        downloadingFiles: 'CSVとJSONファイルをダウンロードしています...',
+        roastLight: '浅煎り',
+        roastMedium: '中煎り',
+        roastMediumDark: '中深煎り',
+        roastDark: '深煎り'
     }
 };
 
@@ -198,8 +210,24 @@ function updateLanguage(lang) {
             element.textContent = translations[lang][key];
         }
     });
+    
+    // Update roast level options
+    updateRoastLevelOptions();
+    
     localStorage.setItem('language', lang);
     renderTable(); // Re-render table to update action buttons
+}
+
+function updateRoastLevelOptions() {
+    const roastSelect = document.getElementById('coffeeRoast');
+    if (roastSelect) {
+        roastSelect.innerHTML = `
+            <option value="淺焙">${translations[currentLanguage].roastLight}</option>
+            <option value="中焙">${translations[currentLanguage].roastMedium}</option>
+            <option value="中深焙">${translations[currentLanguage].roastMediumDark}</option>
+            <option value="深焙">${translations[currentLanguage].roastDark}</option>
+        `;
+    }
 }
 
 // ===========================
@@ -235,7 +263,7 @@ function renderTable() {
 function updateStatistics() {
     const totalItems = coffeeData.length;
     const avgPrice = coffeeData.length > 0 
-        ? (coffeeData.reduce((sum, item) => sum + item.price, 0) / coffeeData.length).toFixed(0)
+        ? (coffeeData.reduce((sum, item) => sum + item.price, 0) / coffeeData.length).toFixed(2)
         : 0;
     const totalStock = coffeeData.reduce((sum, item) => sum + item.stock, 0);
     const avgRating = coffeeData.length > 0
@@ -254,6 +282,7 @@ function updateStatistics() {
 function openAddModal() {
     editingId = null;
     document.getElementById('dataForm').reset();
+    updateRoastLevelOptions(); // Update options when opening modal
     document.querySelector('.modal-header h2').textContent = translations[currentLanguage].modalTitle;
     document.getElementById('dataModal').classList.add('active');
 }
@@ -262,6 +291,7 @@ function openEditModal(id) {
     editingId = id;
     const item = coffeeData.find(d => d.id === id);
     if (item) {
+        updateRoastLevelOptions(); // Update options before setting value
         document.getElementById('coffeeName').value = item.name;
         document.getElementById('coffeeOrigin').value = item.origin;
         document.getElementById('coffeeRoast').value = item.roast;
@@ -432,10 +462,10 @@ async function exportToZip() {
     // Export JSON
     const json = JSON.stringify(coffeeData, null, 2);
     
-    // Download CSV
-    downloadFile(csv, `coffee_data_${getDateString()}.csv`, 'text/csv;charset=utf-8;');
+    // Download CSV with BOM for proper encoding
+    downloadFile('\ufeff' + csv, `coffee_data_${getDateString()}.csv`, 'text/csv;charset=utf-8;');
     
-    // Download JSON after a short delay
+    // Download JSON without BOM after a short delay
     setTimeout(() => {
         downloadFile(json, `coffee_data_${getDateString()}.json`, 'application/json');
     }, 500);
@@ -444,7 +474,7 @@ async function exportToZip() {
 }
 
 function downloadFile(content, filename, type) {
-    const blob = new Blob(['\ufeff' + content], { type: type });
+    const blob = new Blob([content], { type: type });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
