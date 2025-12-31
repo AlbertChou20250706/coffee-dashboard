@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Dashboard - Albert.Chou</title>
+    <style>
+        /* Theme Variables */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --text-primary: #000000;
+            --text-secondary: #333333;
+            --border-color: #cccccc;
+            --accent-color: #4a90e2;
+            --accent-hover: #357abd;
+            --card-bg: #ffffff;
+            --input-bg: #ffffff;
+            --table-header-bg: #e0e0e0;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2a2a2a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+            --accent-color: #64b5f6;
+            --accent-hover: #42a5f5;
+            --card-bg: #2a2a2a;
+            --input-bg: #333333;
+            --table-header-bg: #404040;
+            --shadow: rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #495057;
+            --border-color: #dee2e6;
+            --accent-color: #007bff;
+            --accent-hover: #0056b3;
+            --card-bg: #ffffff;
+            --input-bg: #ffffff;
+            --table-header-bg: #e9ecef;
+            --shadow: rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="black"] {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #333333;
+            --accent-color: #00ff88;
+            --accent-hover: #00cc6a;
+            --card-bg: #0a0a0a;
+            --input-bg: #1a1a1a;
+            --table-header-bg: #1a1a1a;
+            --shadow: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .title-section h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .version-info {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent-color);
+            color: white;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        select {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            border-color: var(--accent-color);
+        }
+
+        .info-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: var(--bg-secondary);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .info-card h3 {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .info-card p {
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .result-table th,
+        .result-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        .result-table th {
+            background: var(--table-header-bg);
+            font-weight: 600;
+        }
+
+        .result-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .export-section {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-list li::before {
+            content: "✓ ";
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .usage-steps {
+            counter-reset: step-counter;
+            list-style: none;
+        }
+
+        .usage-steps li {
+            counter-increment: step-counter;
+            padding: 15px 0;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .usage-steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 15px;
+            width: 30px;
+            height: 30px;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 30px;
+        }
+
+        .param-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .horizontal-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .horizontal-table table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .horizontal-table th,
+        .horizontal-table td {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .horizontal-table th {
+            background: var(--table-header-bg);
+            font-weight: 600;
+        }
+
+        .input-cell input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeIn 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <div class="title-section">
+                    <h1 id="appTitle">☕ Coffee Dashboard</h1>
+                    <div class="version-info">
+                        <span id="versionLabel">Version</span>: 3.0.0 | 
+                        <span id="designerLabel">Designer</span>: Albert.Chou | 
+                        <span id="dateTime"></span>
+                    </div>
+                </div>
+                <div class="controls">
+                    <select id="languageSelector" onchange="changeLanguage()">
+                        <option value="zh">中文</option>
+                        <option value="en">English</option>
+                        <option value="jp">日本語</option>
+                    </select>
+                    <select id="themeSelector" onchange="changeTheme()">
+                        <option value="light" data-zh="淺色主題" data-en="Light Theme" data-jp="ライトテーマ">淺色主題</option>
+                        <option value="dark" data-zh="深色主題" data-en="Dark Theme" data-jp="ダークテーマ">深色主題</option>
+                        <option value="white" data-zh="白底黑字" data-en="White Background" data-jp="白背景">白底黑字</option>
+                        <option value="black" data-zh="黑底白字" data-en="Black Background" data-jp="黒背景">黑底白字</option>
+                    </select>
+                    <button class="btn" onclick="saveSettings()" id="saveSettingsBtn">💾 儲存設定</button>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-card">
+                    <h3 id="updateDateLabel">更新日期</h3>
+                    <p>2025-12-31</p>
+                </div>
+                <div class="info-card">
+                    <h3 id="entranceInfoLabel">進版資訊</h3>
+                    <p>Coffee Dashboard v3.0</p>
+                </div>
+                <div class="info-card">
+                    <h3 id="designStyleLabel">設計風格</h3>
+                    <p id="designStyleText">現代科技風格</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 id="featuresTitle">📋 功能說明</h2>
+                <ul class="feature-list" id="featureList">
+                    <li>咖啡萃取參數計算與建議</li>
+                    <li>即時計算咖啡豆、水、時間比例</li>
+                    <li>多語言介面切換 (中/英/日)</li>
+                    <li>多主題配色方案</li>
+                    <li>匯出功能 (ZIP/Excel/CSV/HTML)</li>
+                    <li>參數設定儲存功能</li>
+                    <li>響應式設計，支援各種裝置</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2 id="usageTitle">🔄 使用流程</h2>
+                <ol class="usage-steps" id="usageSteps">
+                    <li>選擇咖啡豆種類與烘焙程度</li>
+                    <li>設定咖啡豆重量 (克)</li>
+                    <li>輸入萃取水量 (毫升)</li>
+                    <li>設定萃取時間與溫度</li>
+                    <li>查看計算結果與建議</li>
+                    <li>可匯出資料或儲存設定</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 id="parametersTitle">⚙️ 可修改參數</h2>
+            <div class="horizontal-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th id="paramBeanType">豆種類型</th>
+                            <th id="paramRoastLevel">烘焙程度</th>
+                            <th id="paramBeanWeight">豆重 (g)</th>
+                            <th id="paramWaterVolume">水量 (ml)</th>
+                            <th id="paramBrewTime">時間 (秒)</th>
+                            <th id="paramTemperature">溫度 (°C)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="input-cell">
+                                <select id="beanType" onchange="calculate()">
+                                    <option value="arabica" data-zh="阿拉比卡" data-en="Arabica" data-jp="アラビカ">阿拉比卡</option>
+                                    <option value="robusta" data-zh="羅布斯塔" data-en="Robusta" data-jp="ロブスタ">羅布斯塔</option>
+                                    <option value="blend" data-zh="混合" data-en="Blend" data-jp="ブレンド">混合</option>
+                                </select>
+                            </td>
+                            <td class="input-cell">
+                                <select id="roastLevel" onchange="calculate()">
+                                    <option value="light" data-zh="淺焙" data-en="Light" data-jp="ライト">淺焙</option>
+                                    <option value="medium" data-zh="中焙" data-en="Medium" data-jp="ミディアム" selected>中焙</option>
+                                    <option value="dark" data-zh="深焙" data-en="Dark" data-jp="ダーク">深焙</option>
+                                </select>
+                            </td>
+                            <td class="input-cell">
+                                <input type="number" id="beanWeight" value="18" min="5" max="50" onchange="calculate()">
+                            </td>
+                            <td class="input-cell">
+                                <input type="number" id="waterVolume" value="250" min="100" max="500" onchange="calculate()">
+                            </td>
+                            <td class="input-cell">
+                                <input type="number" id="brewTime" value="180" min="60" max="360" onchange="calculate()">
+                            </td>
+                            <td class="input-cell">
+                                <input type="number" id="temperature" value="93" min="80" max="100" onchange="calculate()">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 id="resultsTitle">📊 計算結果</h2>
+            <table class="result-table" id="resultsTable">
+                <thead>
+                    <tr>
+                        <th id="resultParamHeader">參數</th>
+                        <th id="resultValueHeader">數值</th>
+                        <th id="resultRecommendHeader">建議範圍</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody">
+                    <!-- Results will be populated by JavaScript -->
+                </tbody>
+            </table>
+
+            <div class="export-section">
+                <button class="btn" onclick="exportToExcel()" id="exportExcelBtn">📊 Excel</button>
+                <button class="btn" onclick="exportToCSV()" id="exportCSVBtn">📄 CSV</button>
+                <button class="btn" onclick="exportToHTML()" id="exportHTMLBtn">🌐 HTML</button>
+                <button class="btn" onclick="exportToZIP()" id="exportZIPBtn">📦 ZIP</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Albert.Chou Design. All rights reserved.</p>
+            <p id="footerTech">現代科技風格設計 | Coffee Dashboard v3.0.0</p>
+        </footer>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr+equG0SPwSWD1WRv4W3Gx4xm/dqxnC5wGOZ9T+2P6zMPcqXdqjNJ4GXc+eKbUfQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        // Translation object
+        const translations = {
+            zh: {
+                appTitle: "☕ Coffee Dashboard",
+                versionLabel: "版本",
+                designerLabel: "設計者",
+                updateDateLabel: "更新日期",
+                entranceInfoLabel: "進版資訊",
+                designStyleLabel: "設計風格",
+                designStyleText: "現代科技風格",
+                featuresTitle: "📋 功能說明",
+                usageTitle: "🔄 使用流程",
+                parametersTitle: "⚙️ 可修改參數",
+                resultsTitle: "📊 計算結果",
+                saveSettingsBtn: "💾 儲存設定",
+                exportExcelBtn: "📊 Excel",
+                exportCSVBtn: "📄 CSV",
+                exportHTMLBtn: "🌐 HTML",
+                exportZIPBtn: "📦 ZIP",
+                footerTech: "現代科技風格設計 | Coffee Dashboard v3.0.0",
+                features: [
+                    "咖啡萃取參數計算與建議",
+                    "即時計算咖啡豆、水、時間比例",
+                    "多語言介面切換 (中/英/日)",
+                    "多主題配色方案",
+                    "匯出功能 (ZIP/Excel/CSV/HTML)",
+                    "參數設定儲存功能",
+                    "響應式設計，支援各種裝置"
+                ],
+                usage: [
+                    "選擇咖啡豆種類與烘焙程度",
+                    "設定咖啡豆重量 (克)",
+                    "輸入萃取水量 (毫升)",
+                    "設定萃取時間與溫度",
+                    "查看計算結果與建議",
+                    "可匯出資料或儲存設定"
+                ],
+                paramBeanType: "豆種類型",
+                paramRoastLevel: "烘焙程度",
+                paramBeanWeight: "豆重 (g)",
+                paramWaterVolume: "水量 (ml)",
+                paramBrewTime: "時間 (秒)",
+                paramTemperature: "溫度 (°C)",
+                resultParamHeader: "參數",
+                resultValueHeader: "數值",
+                resultRecommendHeader: "建議範圍",
+                resultRatio: "咖啡比例",
+                resultStrength: "濃度評估",
+                resultQuality: "品質評分",
+                resultSuggestion: "萃取建議",
+                settingsSaved: "設定已儲存！",
+                exportSuccess: "匯出成功！"
+            },
+            en: {
+                appTitle: "☕ Coffee Dashboard",
+                versionLabel: "Version",
+                designerLabel: "Designer",
+                updateDateLabel: "Update Date",
+                entranceInfoLabel: "Entry Info",
+                designStyleLabel: "Design Style",
+                designStyleText: "Modern Tech Style",
+                featuresTitle: "📋 Features",
+                usageTitle: "🔄 Usage Flow",
+                parametersTitle: "⚙️ Parameters",
+                resultsTitle: "📊 Results",
+                saveSettingsBtn: "💾 Save Settings",
+                exportExcelBtn: "📊 Excel",
+                exportCSVBtn: "📄 CSV",
+                exportHTMLBtn: "🌐 HTML",
+                exportZIPBtn: "📦 ZIP",
+                footerTech: "Modern Tech Design | Coffee Dashboard v3.0.0",
+                features: [
+                    "Coffee extraction parameter calculation",
+                    "Real-time bean, water, time ratio calculation",
+                    "Multi-language interface (CN/EN/JP)",
+                    "Multiple theme color schemes",
+                    "Export functionality (ZIP/Excel/CSV/HTML)",
+                    "Parameter settings save function",
+                    "Responsive design for all devices"
+                ],
+                usage: [
+                    "Select coffee bean type and roast level",
+                    "Set coffee bean weight (grams)",
+                    "Input water volume (milliliters)",
+                    "Set brewing time and temperature",
+                    "View calculation results and recommendations",
+                    "Export data or save settings"
+                ],
+                paramBeanType: "Bean Type",
+                paramRoastLevel: "Roast Level",
+                paramBeanWeight: "Bean (g)",
+                paramWaterVolume: "Water (ml)",
+                paramBrewTime: "Time (sec)",
+                paramTemperature: "Temp (°C)",
+                resultParamHeader: "Parameter",
+                resultValueHeader: "Value",
+                resultRecommendHeader: "Recommended Range",
+                resultRatio: "Coffee Ratio",
+                resultStrength: "Strength",
+                resultQuality: "Quality Score",
+                resultSuggestion: "Brew Suggestion",
+                settingsSaved: "Settings saved!",
+                exportSuccess: "Export successful!"
+            },
+            jp: {
+                appTitle: "☕ Coffee Dashboard",
+                versionLabel: "バージョン",
+                designerLabel: "デザイナー",
+                updateDateLabel: "更新日",
+                entranceInfoLabel: "エントリー情報",
+                designStyleLabel: "デザインスタイル",
+                designStyleText: "モダンテックスタイル",
+                featuresTitle: "📋 機能説明",
+                usageTitle: "🔄 使用フロー",
+                parametersTitle: "⚙️ パラメータ",
+                resultsTitle: "📊 計算結果",
+                saveSettingsBtn: "💾 設定を保存",
+                exportExcelBtn: "📊 Excel",
+                exportCSVBtn: "📄 CSV",
+                exportHTMLBtn: "🌐 HTML",
+                exportZIPBtn: "📦 ZIP",
+                footerTech: "モダンテックデザイン | Coffee Dashboard v3.0.0",
+                features: [
+                    "コーヒー抽出パラメータ計算",
+                    "リアルタイム豆・水・時間比率計算",
+                    "多言語インターフェース（中/英/日）",
+                    "複数のテーマカラースキーム",
+                    "エクスポート機能（ZIP/Excel/CSV/HTML）",
+                    "パラメータ設定保存機能",
+                    "すべてのデバイス対応レスポンシブデザイン"
+                ],
+                usage: [
+                    "コーヒー豆の種類と焙煎度を選択",
+                    "コーヒー豆の重量を設定（グラム）",
+                    "水量を入力（ミリリットル）",
+                    "抽出時間と温度を設定",
+                    "計算結果と推奨事項を確認",
+                    "データをエクスポートまたは設定を保存"
+                ],
+                paramBeanType: "豆の種類",
+                paramRoastLevel: "焙煎度",
+                paramBeanWeight: "豆 (g)",
+                paramWaterVolume: "水 (ml)",
+                paramBrewTime: "時間 (秒)",
+                paramTemperature: "温度 (°C)",
+                resultParamHeader: "パラメータ",
+                resultValueHeader: "値",
+                resultRecommendHeader: "推奨範囲",
+                resultRatio: "コーヒー比率",
+                resultStrength: "濃度評価",
+                resultQuality: "品質スコア",
+                resultSuggestion: "抽出推奨",
+                settingsSaved: "設定が保存されました！",
+                exportSuccess: "エクスポート成功！"
+            }
+        };
+
+        let currentLanguage = 'zh';
+        let currentTheme = 'light';
+
+        // Initialize
+        window.onload = function() {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            loadSettings();
+            calculate();
+        };
+
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false
+            };
+            const localeMap = { zh: 'zh-TW', en: 'en-US', jp: 'ja-JP' };
+            document.getElementById('dateTime').textContent = now.toLocaleString(localeMap[currentLanguage] || 'zh-TW', options);
+        }
+
+        function changeLanguage() {
+            currentLanguage = document.getElementById('languageSelector').value;
+            const t = translations[currentLanguage];
+
+            // Update all text elements
+            document.getElementById('appTitle').textContent = t.appTitle;
+            document.getElementById('versionLabel').textContent = t.versionLabel;
+            document.getElementById('designerLabel').textContent = t.designerLabel;
+            document.getElementById('updateDateLabel').textContent = t.updateDateLabel;
+            document.getElementById('entranceInfoLabel').textContent = t.entranceInfoLabel;
+            document.getElementById('designStyleLabel').textContent = t.designStyleLabel;
+            document.getElementById('designStyleText').textContent = t.designStyleText;
+            document.getElementById('featuresTitle').textContent = t.featuresTitle;
+            document.getElementById('usageTitle').textContent = t.usageTitle;
+            document.getElementById('parametersTitle').textContent = t.parametersTitle;
+            document.getElementById('resultsTitle').textContent = t.resultsTitle;
+            document.getElementById('saveSettingsBtn').textContent = t.saveSettingsBtn;
+            document.getElementById('exportExcelBtn').textContent = t.exportExcelBtn;
+            document.getElementById('exportCSVBtn').textContent = t.exportCSVBtn;
+            document.getElementById('exportHTMLBtn').textContent = t.exportHTMLBtn;
+            document.getElementById('exportZIPBtn').textContent = t.exportZIPBtn;
+            document.getElementById('footerTech').textContent = t.footerTech;
+
+            // Update parameter headers
+            document.getElementById('paramBeanType').textContent = t.paramBeanType;
+            document.getElementById('paramRoastLevel').textContent = t.paramRoastLevel;
+            document.getElementById('paramBeanWeight').textContent = t.paramBeanWeight;
+            document.getElementById('paramWaterVolume').textContent = t.paramWaterVolume;
+            document.getElementById('paramBrewTime').textContent = t.paramBrewTime;
+            document.getElementById('paramTemperature').textContent = t.paramTemperature;
+
+            // Update result headers
+            document.getElementById('resultParamHeader').textContent = t.resultParamHeader;
+            document.getElementById('resultValueHeader').textContent = t.resultValueHeader;
+            document.getElementById('resultRecommendHeader').textContent = t.resultRecommendHeader;
+
+            // Update features list
+            const featureList = document.getElementById('featureList');
+            featureList.innerHTML = '';
+            t.features.forEach(feature => {
+                const li = document.createElement('li');
+                li.textContent = feature;
+                featureList.appendChild(li);
+            });
+
+            // Update usage steps
+            const usageSteps = document.getElementById('usageSteps');
+            usageSteps.innerHTML = '';
+            t.usage.forEach(step => {
+                const li = document.createElement('li');
+                li.textContent = step;
+                usageSteps.appendChild(li);
+            });
+
+            // Update select options with data attributes
+            updateSelectOptions('beanType');
+            updateSelectOptions('roastLevel');
+            updateThemeOptions();
+
+            // Recalculate to update results with new language
+            calculate();
+        }
+
+        function updateSelectOptions(selectId) {
+            const select = document.getElementById(selectId);
+            Array.from(select.options).forEach(option => {
+                const langAttr = 'data-' + currentLanguage;
+                if (option.hasAttribute(langAttr)) {
+                    option.textContent = option.getAttribute(langAttr);
+                }
+            });
+        }
+
+        function updateThemeOptions() {
+            const select = document.getElementById('themeSelector');
+            Array.from(select.options).forEach(option => {
+                const langAttr = 'data-' + currentLanguage;
+                if (option.hasAttribute(langAttr)) {
+                    option.textContent = option.getAttribute(langAttr);
+                }
+            });
+        }
+
+        function changeTheme() {
+            const theme = document.getElementById('themeSelector').value;
+            currentTheme = theme;
+            
+            if (theme === 'white') {
+                document.body.removeAttribute('data-theme');
+            } else {
+                document.body.setAttribute('data-theme', theme);
+            }
+        }
+
+        function calculate() {
+            const beanWeight = parseFloat(document.getElementById('beanWeight').value);
+            const waterVolume = parseFloat(document.getElementById('waterVolume').value);
+            const brewTime = parseFloat(document.getElementById('brewTime').value);
+            const temperature = parseFloat(document.getElementById('temperature').value);
+
+            const ratio = (waterVolume / beanWeight).toFixed(1);
+            const t = translations[currentLanguage];
+
+            // Calculate strength (濃度)
+            let strength = '';
+            if (ratio < 12) {
+                strength = currentLanguage === 'zh' ? '濃' : currentLanguage === 'en' ? 'Strong' : '濃い';
+            } else if (ratio <= 16) {
+                strength = currentLanguage === 'zh' ? '適中' : currentLanguage === 'en' ? 'Medium' : '適度';
+            } else {
+                strength = currentLanguage === 'zh' ? '淡' : currentLanguage === 'en' ? 'Light' : '薄い';
+            }
+
+            // Calculate quality score (品質評分)
+            let quality = 85;
+            if (temperature >= 90 && temperature <= 96) quality += 5;
+            if (brewTime >= 150 && brewTime <= 240) quality += 5;
+            if (ratio >= 13 && ratio <= 16) quality += 5;
+
+            // Generate suggestion
+            let suggestion = '';
+            if (currentLanguage === 'zh') {
+                if (ratio < 12) suggestion = '比例較濃，可增加水量';
+                else if (ratio > 16) suggestion = '比例較淡，可增加豆量';
+                else suggestion = '比例適中，建議維持';
+            } else if (currentLanguage === 'en') {
+                if (ratio < 12) suggestion = 'Too strong, add more water';
+                else if (ratio > 16) suggestion = 'Too light, add more beans';
+                else suggestion = 'Good ratio, maintain';
+            } else {
+                if (ratio < 12) suggestion = '濃すぎる、水を増やす';
+                else if (ratio > 16) suggestion = '薄すぎる、豆を増やす';
+                else suggestion = '良い比率、維持する';
+            }
+
+            const results = [
+                { param: t.resultRatio, value: `1:${ratio}`, recommend: '1:13 - 1:16' },
+                { param: t.resultStrength, value: strength, recommend: currentLanguage === 'zh' ? '適中' : currentLanguage === 'en' ? 'Medium' : '適度' },
+                { param: t.resultQuality, value: `${quality}%`, recommend: '≥85%' },
+                { param: t.resultSuggestion, value: suggestion, recommend: '-' }
+            ];
+
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+            results.forEach(result => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${result.param}</td>
+                    <td>${result.value}</td>
+                    <td>${result.recommend}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function saveSettings() {
+            const settings = {
+                language: currentLanguage,
+                theme: currentTheme,
+                beanType: document.getElementById('beanType').value,
+                roastLevel: document.getElementById('roastLevel').value,
+                beanWeight: document.getElementById('beanWeight').value,
+                waterVolume: document.getElementById('waterVolume').value,
+                brewTime: document.getElementById('brewTime').value,
+                temperature: document.getElementById('temperature').value
+            };
+
+            localStorage.setItem('coffeeSettings', JSON.stringify(settings));
+            showNotification(translations[currentLanguage].settingsSaved);
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('coffeeSettings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                currentLanguage = settings.language || 'zh';
+                currentTheme = settings.theme || 'light';
+                
+                document.getElementById('languageSelector').value = currentLanguage;
+                document.getElementById('themeSelector').value = currentTheme;
+                document.getElementById('beanType').value = settings.beanType || 'arabica';
+                document.getElementById('roastLevel').value = settings.roastLevel || 'medium';
+                document.getElementById('beanWeight').value = settings.beanWeight || 18;
+                document.getElementById('waterVolume').value = settings.waterVolume || 250;
+                document.getElementById('brewTime').value = settings.brewTime || 180;
+                document.getElementById('temperature').value = settings.temperature || 93;
+
+                changeTheme();
+                changeLanguage();
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function exportToExcel() {
+            const data = getCurrentData();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Coffee Data");
+            XLSX.writeFile(wb, "coffee-dashboard-data.xlsx");
+            showNotification(translations[currentLanguage].exportSuccess);
+        }
+
+        function exportToCSV() {
+            const data = getCurrentData();
+            let csv = '';
+            data.forEach(row => {
+                csv += row.join(',') + '\n';
+            });
+            
+            // Add BOM (Byte Order Mark) to ensure proper UTF-8 encoding in Excel
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'coffee-dashboard-data.csv';
+            link.click();
+            showNotification(translations[currentLanguage].exportSuccess);
+        }
+
+        function generateHTMLExport(data) {
+            let html = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Coffee Dashboard Export</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #4a90e2; color: white; }
+        h1 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>☕ Coffee Dashboard Export</h1>
+    <p>Export Date: ${new Date().toLocaleString()}</p>
+    <table>`;
+            
+            data.forEach((row, index) => {
+                html += '<tr>';
+                row.forEach(cell => {
+                    html += index === 0 ? `<th>${cell}</th>` : `<td>${cell}</td>`;
+                });
+                html += '</tr>';
+            });
+            
+            html += `</table></body></html>`;
+            return html;
+        }
+
+        function exportToHTML() {
+            const data = getCurrentData();
+            const html = generateHTMLExport(data);
+            
+            const blob = new Blob([html], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'coffee-dashboard-data.html';
+            link.click();
+            showNotification(translations[currentLanguage].exportSuccess);
+        }
+
+        function exportToZIP() {
+            const zip = new JSZip();
+            const data = getCurrentData();
+
+            // Add Excel
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Coffee Data");
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            zip.file("coffee-dashboard-data.xlsx", excelBuffer);
+
+            // Add CSV
+            let csv = '';
+            data.forEach(row => {
+                csv += row.join(',') + '\n';
+            });
+            // Add BOM (Byte Order Mark) to ensure proper UTF-8 encoding in Excel
+            zip.file("coffee-dashboard-data.csv", '\ufeff' + csv);
+
+            // Add HTML
+            const html = generateHTMLExport(data);
+            zip.file("coffee-dashboard-data.html", html);
+
+            // Generate ZIP
+            zip.generateAsync({ type: 'blob' }).then(function(content) {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = 'coffee-dashboard-export.zip';
+                link.click();
+                showNotification(translations[currentLanguage].exportSuccess);
+            });
+        }
+
+        function getCurrentData() {
+            const t = translations[currentLanguage];
+            return [
+                [t.paramBeanType, t.paramRoastLevel, t.paramBeanWeight, t.paramWaterVolume, t.paramBrewTime, t.paramTemperature],
+                [
+                    document.getElementById('beanType').options[document.getElementById('beanType').selectedIndex].text,
+                    document.getElementById('roastLevel').options[document.getElementById('roastLevel').selectedIndex].text,
+                    document.getElementById('beanWeight').value,
+                    document.getElementById('waterVolume').value,
+                    document.getElementById('brewTime').value,
+                    document.getElementById('temperature').value
+                ],
+                [],
+                [t.resultParamHeader, t.resultValueHeader, t.resultRecommendHeader],
+                ...Array.from(document.getElementById('resultsBody').rows).map(row => 
+                    Array.from(row.cells).map(cell => cell.textContent)
+                )
+            ];
+        }
+    </script>
+</body>
+</html>
