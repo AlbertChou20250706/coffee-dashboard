@@ -22,10 +22,15 @@ const translations = {
         totalStock: '總庫存',
         avgRating: '平均評分',
         modalTitle: '新增咖啡數據',
+        modalTitleEdit: '編輯咖啡數據',
         btnSave: '保存',
         btnCancel: '取消',
         editBtn: '編輯',
-        deleteBtn: '刪除'
+        deleteBtn: '刪除',
+        confirmDelete: '確定要刪除此項目嗎？',
+        confirmDeleteMultiple: '確定要刪除 {count} 個項目嗎？',
+        selectItemsFirst: '請先選擇要刪除的項目',
+        downloadingFiles: '正在下載 CSV 和 JSON 檔案...'
     },
     en: {
         subtitle: 'Professional Coffee Data Management Platform',
@@ -47,10 +52,15 @@ const translations = {
         totalStock: 'Total Stock',
         avgRating: 'Average Rating',
         modalTitle: 'Add Coffee Data',
+        modalTitleEdit: 'Edit Coffee Data',
         btnSave: 'Save',
         btnCancel: 'Cancel',
         editBtn: 'Edit',
-        deleteBtn: 'Delete'
+        deleteBtn: 'Delete',
+        confirmDelete: 'Are you sure you want to delete this item?',
+        confirmDeleteMultiple: 'Are you sure you want to delete {count} items?',
+        selectItemsFirst: 'Please select items to delete first',
+        downloadingFiles: 'Downloading CSV and JSON files...'
     },
     ja: {
         subtitle: 'プロフェッショナルコーヒーデータ管理プラットフォーム',
@@ -72,10 +82,15 @@ const translations = {
         totalStock: '総在庫',
         avgRating: '平均評価',
         modalTitle: 'コーヒーデータ追加',
+        modalTitleEdit: 'コーヒーデータ編集',
         btnSave: '保存',
         btnCancel: 'キャンセル',
         editBtn: '編集',
-        deleteBtn: '削除'
+        deleteBtn: '削除',
+        confirmDelete: 'この項目を削除してもよろしいですか？',
+        confirmDeleteMultiple: '{count} 個の項目を削除してもよろしいですか？',
+        selectItemsFirst: '削除する項目を先に選択してください',
+        downloadingFiles: 'CSVとJSONファイルをダウンロードしています...'
     }
 };
 
@@ -253,7 +268,7 @@ function openEditModal(id) {
         document.getElementById('coffeePrice').value = item.price;
         document.getElementById('coffeeStock').value = item.stock;
         document.getElementById('coffeeRating').value = item.rating;
-        document.querySelector('.modal-header h2').textContent = translations[currentLanguage].modalTitle.replace('新增', '編輯').replace('Add', 'Edit').replace('追加', '編集');
+        document.querySelector('.modal-header h2').textContent = translations[currentLanguage].modalTitleEdit;
         document.getElementById('dataModal').classList.add('active');
     }
 }
@@ -300,7 +315,7 @@ function editRow(id) {
 }
 
 function deleteRow(id) {
-    if (confirm('確定要刪除此項目嗎？')) {
+    if (confirm(translations[currentLanguage].confirmDelete)) {
         coffeeData = coffeeData.filter(item => item.id !== id);
         renderTable();
         updateStatistics();
@@ -310,11 +325,12 @@ function deleteRow(id) {
 function deleteSelected() {
     const checkboxes = document.querySelectorAll('.row-checkbox:checked');
     if (checkboxes.length === 0) {
-        alert('請先選擇要刪除的項目');
+        alert(translations[currentLanguage].selectItemsFirst);
         return;
     }
     
-    if (confirm(`確定要刪除 ${checkboxes.length} 個項目嗎？`)) {
+    const message = translations[currentLanguage].confirmDeleteMultiple.replace('{count}', checkboxes.length);
+    if (confirm(message)) {
         const idsToDelete = Array.from(checkboxes).map(cb => parseInt(cb.getAttribute('data-id')));
         coffeeData = coffeeData.filter(item => !idsToDelete.includes(item.id));
         document.getElementById('selectAll').checked = false;
@@ -424,7 +440,7 @@ async function exportToZip() {
         downloadFile(json, `coffee_data_${getDateString()}.json`, 'application/json');
     }, 500);
     
-    alert('正在下載 CSV 和 JSON 檔案...');
+    alert(translations[currentLanguage].downloadingFiles);
 }
 
 function downloadFile(content, filename, type) {
